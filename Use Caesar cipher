@@ -1,0 +1,2 @@
+python toolkit.py encode -i input.txt -o encoded.txt -m caesar --shift 5
+python toolkit.py decode -i encoded.txt -o decoded.txt -m caesar --shift 5
