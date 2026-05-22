@@ -1,0 +1,2 @@
+python toolkit.py encode -i input.txt -o encoded.txt -m base64 --compress
+python toolkit.py decode -i encoded.txt -o decoded.txt -m base64 --decompress
