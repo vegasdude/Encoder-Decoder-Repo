@@ -1,0 +1,118 @@
+import base64
+import hashlib
+import json
+import os
+import zlib
+from datetime import datetime, timezone
+
+try:
+    from Crypto.Cipher import AES
+    from Crypto.Random import get_random_bytes
+except Exception:
+    AES = None
+    get_random_bytes = None
+
+def caesar_shift(text, shift):
+    out = []
+    for ch in text:
+        if "a" <= ch <= "z":
+            out.append(chr((ord(ch) - 97 + shift) % 26 + 97))
+        elif "A" <= ch <= "Z":
+            out.append(chr((ord(ch) - 65 + shift) % 26 + 65))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+def pad(data):
+    n = 16 - (len(data) % 16)
+    return data + bytes([n]) * n
+
+def unpad(data):
+    n = data[-1]
+    if n < 1 or n > 16:
+        raise ValueError("Invalid padding")
+    return data[:-n]
+
+def aes_encrypt(data, key):
+    if AES is None:
+        raise ImportError("pycryptodome is required for AES")
+    key = hashlib.sha256(key.encode("utf-8")).digest()
+    iv = get_random_bytes(16)
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    enc = cipher.encrypt(pad(data))
+    return base64.b64encode(iv + enc).decode("ascii")
+
+def aes_decrypt(text, key):
+    if AES is None:
+        raise ImportError("pycryptodome is required for AES")
+    key = hashlib.sha256(key.encode("utf-8")).digest()
+    raw = base64.b64decode(text.encode("ascii"))
+    iv, enc = raw[:16], raw[16:]
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    return unpad(cipher.decrypt(enc))
+
+def encode(text, mode, shift=3, compress=False, password=None):
+    raw = text.encode("utf-8")
+    if compress and mode in {"base64", "base64url", "hex"}:
+        raw = zlib.compress(raw)
+
+    if mode == "base64":
+        return base64.b64encode(raw).decode("ascii"), raw
+    if mode == "base64url":
+        return base64.urlsafe_b64encode(raw).decode("ascii"), raw
+    if mode == "hex":
+        return raw.hex(), raw
+    if mode == "caesar":
+        if compress:
+            raise ValueError("Compression is not supported with Caesar cipher")
+        encoded = caesar_shift(text, shift)
+        return encoded, raw
+    if mode == "hash":
+        encoded = hashlib.sha256(raw).hexdigest()
+        return encoded, raw
+    if mode == "aes":
+        if not password:
+            raise ValueError("AES mode requires a password")
+        encoded = aes_encrypt(raw, password)
+        return encoded, raw
+
+    raise ValueError("Unsupported mode")
+
+def decode(text, mode, shift=3, decompress=False, password=None):
+    if mode == "caesar":
+        return caesar_shift(text, -shift)
+
+    if mode == "base64":
+        raw = base64.b64decode(text.encode("ascii"))
+    elif mode == "base64url":
+        raw = base64.urlsafe_b64decode(text.encode("ascii"))
+    elif mode == "hex":
+        raw = bytes.fromhex(text)
+    elif mode == "aes":
+        if not password:
+            raise ValueError("AES mode requires a password")
+        raw = aes_decrypt(text, password)
+        return raw.decode("utf-8")
+    else:
+        raise ValueError("Hash cannot be decoded")
+
+    if decompress:
+        raw = zlib.decompress(raw)
+
+    return raw.decode("utf-8")
+
+def metadata_for(source_file, mode, shift, compress, raw_bytes, encoded_text):
+    return {
+        "source_file": source_file,
+        "mode": mode,
+        "shift": shift,
+        "compressed": compress,
+        "sha256": hashlib.sha256(raw_bytes).hexdigest(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "output_length": len(encoded_text),
+    }
+
+def verify_metadata(raw_bytes, metadata):
+    expected = metadata.get("sha256")
+    actual = hashlib.sha256(raw_bytes).hexdigest()
+    return expected == actual, actual
