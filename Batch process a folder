@@ -1,0 +1,1 @@
+python toolkit.py encode --batch input_folder -m hex
