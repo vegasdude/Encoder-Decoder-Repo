@@ -50,7 +50,22 @@ A Python toolkit for encoding, decoding, hashing, and optional compression.
 - `encoder.py` — encode text files
 - `decoder.py` — decode text files
 - `toolkit.py` — unified command-line interface
+# Advanced Encoding / Decoding Tool
 
+A single-file Python tool with a terminal menu for encoding and decoding text files.
+
+## Features
+- Base64
+- URL-safe Base64
+- Hex
+- Caesar cipher
+- SHA-256 hashing
+- Optional zlib compression
+- Easy terminal menu
+
+## Run
+```bash
+python app.py
 ## Examples
 
 ### Encode with Base64
