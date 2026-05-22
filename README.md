@@ -71,3 +71,24 @@ python app.py
 ### Encode with Base64
 ```bash
 python encoder.py -i sample_input.txt -o encoded.txt -m base64
+# Advanced Encoding / Decoding Toolkit
+
+A Python repository with:
+- Command-line interface.
+- Unified entry point.
+- Tkinter GUI.
+- Reusable encoding utilities.
+
+## Features
+- Base64
+- URL-safe Base64
+- Hex
+- Caesar cipher
+- SHA-256 hashing
+- Optional zlib compression
+- GUI file picker
+
+## CLI usage
+```bash
+python cli.py encode -i input.txt -o output.txt -m base64
+python cli.py decode -i encoded.txt -o decoded.txt -m base64
