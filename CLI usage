@@ -1,0 +1,4 @@
+python cli.py encode -i sample_input.txt -o encoded.txt -m base64 --meta metadata.json
+python cli.py decode -i encoded.txt -o decoded.txt -m base64 --meta metadata.json --verify
+python cli.py encode -i sample_input.txt -o secret.txt -m aes --password mypass --meta secret.json
+python cli.py decode -i secret.txt -o plain.txt -m aes --password mypass
