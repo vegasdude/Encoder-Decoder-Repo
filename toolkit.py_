@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+import argparse
+from pathlib import Path
+from encoder import encode_text, build_metadata
+from decoder import decode_text
+import json
+
+def main():
+    parser = argparse.ArgumentParser(description="Encoding/decoding toolkit with JSON metadata")
+    parser.add_argument("action", choices=["encode", "decode"])
+    parser.add_argument("-i", "--input", required=True)
+    parser.add_argument("-o", "--output", required=True)
+    parser.add_argument("-m", "--mode", choices=["base64", "base64url", "hex", "caesar", "hash"], default="base64")
+    parser.add_argument("--shift", type=int, default=3)
+    parser.add_argument("--compress", action="store_true")
+    parser.add_argument("--meta", default=None, help="Metadata JSON file for encode")
+    parser.add_argument("-j", "--json", default=None, help="Metadata JSON file for decode")
+    args = parser.parse_args()
+
+    if args.action == "encode":
+        text = Path(args.input).read_text(encoding="utf-8")
+        encoded, raw = encode_text(text, args.mode, shift=args.shift, compress=args.compress)
+        Path(args.output).write_text(encoded, encoding="utf-8")
+
+        meta_path = args.meta or f"{Path(args.output).stem}.json"
+        metadata = build_metadata(args.input, args.mode, args.shift, args.compress, raw, encoded)
+        Path(meta_path).write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+
+    else:
+        if not args.json:
+            parser.error("decode requires --json metadata file")
+        encoded_text = Path(args.input).read_text(encoding="utf-8").strip()
+        metadata = json.loads(Path(args.json).read_text(encoding="utf-8"))
+        result = decode_text(
+            encoded_text,
+            metadata["mode"],
+            shift=metadata.get("shift", 3),
+            compressed=metadata.get("compressed", False),
+        )
+        Path(args.output).write_text(result, encoding="utf-8")
+
+if __name__ == "__main__":
+    main()
