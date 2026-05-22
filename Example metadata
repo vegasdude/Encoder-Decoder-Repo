@@ -1,0 +1,7 @@
+{
+  "source_file": "sample_input.txt",
+  "mode": "base64",
+  "shift": 3,
+  "compressed": true,
+  "sha256": "..."
+}
