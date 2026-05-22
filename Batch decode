@@ -1,0 +1,1 @@
+python batch.py decode -i output -o restored -m base64 --verify
