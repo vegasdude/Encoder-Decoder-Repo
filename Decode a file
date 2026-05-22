@@ -1,0 +1,1 @@
+python toolkit.py decode -i encoded.txt -o decoded.txt -m base64
