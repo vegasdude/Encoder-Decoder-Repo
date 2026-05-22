@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+import argparse
+import base64
+import json
+import zlib
+from pathlib import Path
+
+def caesar_shift(text, shift):
+    out = []
+    for ch in text:
+        if "a" <= ch <= "z":
+            out.append(chr((ord(ch) - 97 + shift) % 26 + 97))
+        elif "A" <= ch <= "Z":
+            out.append(chr((ord(ch) - 65 + shift) % 26 + 65))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+def decode_text(text, mode, shift=3, compressed=False):
+    if mode == "caesar":
+        return caesar_shift(text, -shift)
+
+    if mode == "base64":
+        raw = base64.b64decode(text.encode("ascii"))
+    elif mode == "base64url":
+        raw = base64.urlsafe_b64decode(text.encode("ascii"))
+    elif mode == "hex":
+        raw = bytes.fromhex(text)
+    else:
+        raise ValueError("Hash cannot be decoded")
+
+    if compressed:
+        raw = zlib.decompress(raw)
+
+    return raw.decode("utf-8")
+
+def main():
+    parser = argparse.ArgumentParser(description="Decode text using JSON metadata")
+    parser.add_argument("-i", "--input", required=True, help="Encoded text file")
+    parser.add_argument("-o", "--output", required=True, help="Decoded output file")
+    parser.add_argument("-j", "--json", required=True, help="Metadata JSON file")
+    args = parser.parse_args()
+
+    encoded_text = Path(args.input).read_text(encoding="utf-8").strip()
+    metadata = json.loads(Path(args.json).read_text(encoding="utf-8"))
+
+    result = decode_text(
+        encoded_text,
+        metadata["mode"],
+        shift=metadata.get("shift", 3),
+        compressed=metadata.get("compressed", False),
+    )
+
+    Path(args.output).write_text(result, encoding="utf-8")
+
+if __name__ == "__main__":
+    main()
