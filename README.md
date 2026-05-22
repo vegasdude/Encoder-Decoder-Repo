@@ -74,6 +74,27 @@ python encoder.py -i sample_input.txt -o encoded.txt -m base64
 # Advanced Encoding / Decoding Toolkit
 
 A Python repository with:
+# Encoding / Decoding with JSON Metadata
+
+This repo encodes text files and writes a matching JSON metadata file.
+
+## Files
+- `encoder.py` — encodes text and creates metadata.
+- `decoder.py` — decodes text using metadata.
+- `toolkit.py` — unified command-line interface.
+
+## Features
+- Base64
+- URL-safe Base64
+- Hex
+- Caesar cipher
+- SHA-256 hashing
+- Optional zlib compression
+- JSON metadata for decoding and verification
+
+## Encode
+```bash
+python encoder.py -i sample_input.txt -o encoded.txt -m base64 --compress --meta metadata.json
 - Command-line interface.
 - Unified entry point.
 - Tkinter GUI.
