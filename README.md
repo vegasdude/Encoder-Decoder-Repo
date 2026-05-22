@@ -33,3 +33,26 @@ A Python-based toolkit for encoding, decoding, compression, and batch processing
 ### Encode a file
 ```bash
 python toolkit.py encode -i input.txt -o encoded.txt -m base64
+# Advanced Encoding / Decoding Repo
+
+A Python toolkit for encoding, decoding, hashing, and optional compression.
+
+## Features
+- Base64
+- URL-safe Base64
+- Hex
+- Caesar cipher
+- SHA-256 hashing
+- Optional zlib compression
+- Unified command-line toolkit
+
+## Files
+- `encoder.py` — encode text files
+- `decoder.py` — decode text files
+- `toolkit.py` — unified command-line interface
+
+## Examples
+
+### Encode with Base64
+```bash
+python encoder.py -i sample_input.txt -o encoded.txt -m base64
