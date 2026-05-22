@@ -114,6 +114,25 @@ python encoder.py -i sample_input.txt -o encoded.txt -m base64 --compress --meta
 python cli.py encode -i input.txt -o output.txt -m base64
 python cli.py decode -i encoded.txt -o decoded.txt -m base64
 # Advanced Encoding / Decoding Toolkit
+# Advanced Encoding / Decoding Toolkit
+
+A Python repository for encoding, decoding, metadata verification, GUI use, AES encryption, and batch processing.
+
+## Features
+- Base64
+- URL-safe Base64
+- Hex
+- Caesar cipher
+- SHA-256 hashing
+- Optional zlib compression
+- JSON metadata
+- AES encryption/decryption
+- Tkinter GUI
+- Batch folder processing
+
+## Install
+```bash
+pip install -r requirements.txt
 
 A Python repository for encoding, decoding, metadata verification, batch-ready workflows, GUI use, and optional AES encryption.
 
