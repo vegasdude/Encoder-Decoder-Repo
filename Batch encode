@@ -1,0 +1,1 @@
+python batch.py encode -i sample_input -o output -m base64 --compress
